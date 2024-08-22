@@ -1,0 +1,203 @@
+/* Estilos generales */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%; /* Asegura que el body ocupe todo el alto de la ventana */
+    margin: 0; /* Elimina el margen por defecto */
+}
+
+/* Fondo dinámico */
+.background-container {
+    position: fixed; /* Usa fixed para que el fondo cubra toda la pantalla */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    z-index: -1; /* Asegúrate de que el fondo esté detrás del contenido */
+    overflow: hidden; /* Evita barras de desplazamiento innecesarias */
+}
+
+/* Estilos del body */
+body {
+    font-family: 'Georgia', serif;
+    background-color: rgba(255, 255, 255, 0.9); /* Color de fondo ligero para la visibilidad del contenido */
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Encabezado */
+header {
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+
+nav {
+    margin-top: 10px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.2rem;
+    margin: 0 15px;
+}
+
+nav a:hover {
+    text-decoration: underline; /* Efecto hover para los enlaces del nav */
+}
+
+/* Estilos del contenedor principal */
+.container {
+    max-width: 1200px; /* Ancho máximo del contenedor principal */
+    margin: 0 auto; /* Centra el contenedor */
+    padding: 20px;
+}
+
+/* Sección principal */
+main {
+    padding: 20px;
+}
+
+.books-section h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2rem;
+}
+
+/* Tarjetas de libros */
+.card {
+    border-radius: 10px; /* Bordes redondeados para las tarjetas */
+    overflow: hidden; /* Oculta cualquier contenido que se desborde */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil para un efecto de elevación */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transiciones suaves para efectos de hover */
+    margin-bottom: 1rem; /* Espaciado en la parte inferior de la tarjeta */
+}
+
+.card:hover {
+    transform: translateY(-5px); /* Eleva la tarjeta ligeramente al pasar el cursor */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Aumenta la sombra en hover */
+}
+
+.card-img-top {
+    width: 100%; /* Asegura que la imagen ocupe todo el ancho del contenedor */
+    height: 180px; /* Altura fija para las imágenes */
+    object-fit: cover; /* Mantiene la proporción de la imagen sin distorsionar */
+}
+
+.card-body {
+    padding: 1rem; /* Espaciado interno en el cuerpo de la tarjeta */
+    background-color: #fff; /* Color de fondo blanco para el cuerpo de la tarjeta */
+}
+
+.card-title {
+    font-size: 1.25rem; /* Tamaño del texto del título */
+    margin-bottom: 0.5rem; /* Espaciado inferior del título */
+}
+
+.card-text {
+    font-size: 1rem; /* Tamaño del texto del autor */
+    margin-bottom: 1rem; /* Espaciado inferior del texto del autor */
+}
+
+/* Botones */
+.favorite-btn, .delete-btn, .add-book-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin: 5px;
+}
+
+.favorite-btn {
+    background-color: #ffd700;
+    color: black;
+}
+
+.delete-btn {
+    background-color: #ff4d4d;
+    color: white;
+}
+
+.add-book-btn {
+    background-color: #4CAF50;
+    color: white;
+    display: block;
+    margin: 20px auto;
+}
+
+/* Pie de página */
+footer {
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    text-align: center;
+    padding: 10px;
+    margin-top: 20px;
+}
+
+footer a {
+    color: white;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline; /* Efecto hover para los enlaces del pie de página */
+}
+
+/* Botones principales de navegación */
+.nav-btn, .footer-btn {
+    display: inline-block;
+    padding: 15px 30px; /* Aumentar el padding para hacer los botones más grandes */
+    margin: 10px; /* Espaciado mayor entre los botones */
+    font-size: 1.2rem; /* Aumentar el tamaño de fuente */
+    font-weight: bold;
+    color: white;
+    background-color: #007bff; /* Color principal de los botones */
+    border: 2px solid #0056b3; /* Bordes visibles para resaltar los botones */
+    border-radius: 50px; /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para dar profundidad */
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    text-decoration: none;
+}
+
+.nav-btn:hover, .footer-btn:hover {
+    background-color: #0056b3; /* Color de fondo al hacer hover */
+    transform: scale(1.1); /* Efecto de agrandar al hacer hover */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Aumentar la sombra en hover */
+}
+
+/* Asegura que los botones se centren en el contenedor */
+.nav-btn-container, .footer-btn-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Ajusta los márgenes del pie de página */
+footer {
+    margin-top: 40px;
+}
+
+/* Animaciones */
+.animate__fadeIn {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.animate__fadeIn.animate__fadeIn--visible {
+    opacity: 1;
+}
+
