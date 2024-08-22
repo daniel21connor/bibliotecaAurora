@@ -89,6 +89,48 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+const categoriaBotones = document.querySelectorAll('.categoria-btn');
+
+categoriaBotones.forEach(function(boton) {
+    boton.addEventListener('click', function() {
+        const categoriaId = boton.getAttribute('data-categoria-id');
+
+        // Realizar la solicitud AJAX para obtener los libros de la categoría seleccionada
+        fetch(`/libros/categoria/${categoriaId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Limpiar el contenedor de libros actual
+                    librosContainer.innerHTML = '';
+
+                    // Agregar los nuevos libros al contenedor
+                    data.libros.forEach(libro => {
+                        const libroHtml = `
+                                    <div class="col-md-4 libro-item" data-libro-id="${libro.id}">
+                                        <div class="card mb-4">
+                                            <img src="${libro.imagen}" class="card-img-top" alt="Portada del Libro" style="width: 100%; height: auto;">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Título: ${libro.titulo}</h5>
+                                                <p class="card-text">Autor: ${libro.autor}</p>
+                                                <form action="/favoritos/${libro.id}" method="POST" class="agregar-favorito-form">
+                                                    <button type="submit" class="btn btn-primary">Agregar a Favoritos</button>
+                                                </form>
+                                                <button type="button" class="btn btn-danger eliminar-libro-btn">Eliminar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                        librosContainer.insertAdjacentHTML('beforeend', libroHtml);
+                    });
+                } else {
+                    console.error('Error al cargar los libros de la categoría.');
+                }
+            })
+            .catch(error => {
+                console.error('Error en la solicitud:', error);
+            });
+    });
+});
 
 
 

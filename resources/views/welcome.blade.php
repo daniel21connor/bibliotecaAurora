@@ -44,7 +44,7 @@
         <div class="row" id="libros-container">
             @if (isset($libros) && $libros->count() > 0)
                 @foreach ($libros as $libro)
-                    <div class="col-md-4 libro-item">
+                    <div class="col-md-4 libro-item" data-libro-id="{{ $libro->id }}">
                         <div class="card mb-4">
                             <img src="{{ asset('images/' . $libro->imagen) }}" class="card-img-top" alt="Portada del Libro" style="width: 100%; height: auto;">
                             <div class="card-body">
@@ -54,11 +54,7 @@
                                     @csrf
                                     <button type="submit" class="btn btn-primary">Agregar a Favoritos</button>
                                 </form>
-                                <form action="{{ route('eliminarLibro', ['id' => $libro->id]) }}" method="POST" class="eliminar-libro-form" style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger">Eliminar</button>
-                                </form>
+                                <button type="button" class="btn btn-danger eliminar-libro-btn">Eliminar</button>
                             </div>
                         </div>
                     </div>
@@ -77,13 +73,13 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ asset('js/app.js') }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const backgroundContainer = document.querySelector('.background-container');
         const images = [
-            'https://img.freepik.com/vector-gratis/interior-biblioteca-sala-vacia-leer-libros-estantes-madera_33099-1722.jpg?size=626&ext=jpg&ga=GA1.1.2008272138.1724198400&semt=ais_hybrid',
-            'https://img.freepik.com/vector-premium/biblioteca-estantes-caricatura-vector-ilustracion-escaleras-hecho-libros-puerta-abierta-forma-libro-grande-pila-libros_273525-1540.jpg',
-            'https://e1.pxfuel.com/desktop-wallpaper/154/108/desktop-wallpaper-aurora-singer.jpg'
+            'https://img.freepik.com/vector-premium/fondo-degradado-color-pastel-desenfoque-suave-abstracto-banner-sitio-web-diseno-tarjeta-papel_120819-487.jpg',
+            'https://static.vecteezy.com/system/resources/previews/012/985/558/non_2x/soft-gradient-blurry-backgrounds-for-website-design-or-business-vector.jpg'
         ];
 
         if (!backgroundContainer) {
@@ -103,8 +99,57 @@
 
         // Inicializa con la primera imagen
         changeBackground();
+
+        // Filtrado dinámico de libros
+        const filtroInput = document.getElementById('filtro');
+        const librosContainer = document.getElementById('libros-container');
+
+        filtroInput.addEventListener('input', function() {
+            const filtroTexto = filtroInput.value.toLowerCase();
+            const libros = librosContainer.querySelectorAll('.libro-item');
+
+            libros.forEach(function(libro) {
+                const titulo = libro.querySelector('.card-title').textContent.toLowerCase();
+                const autor = libro.querySelector('.card-text').textContent.toLowerCase();
+
+                if (titulo.includes(filtroTexto) || autor.includes(filtroTexto)) {
+                    libro.style.display = '';
+                } else {
+                    libro.style.display = 'none';
+                }
+            });
+        });
+
+        // Eliminar libro con AJAX
+        const eliminarBotones = document.querySelectorAll('.eliminar-libro-btn');
+
+        eliminarBotones.forEach(function(boton) {
+            boton.addEventListener('click', function() {
+                const libroItem = boton.closest('.libro-item');
+                const libroId = libroItem.getAttribute('data-libro-id');
+
+                // Realizar la solicitud AJAX para eliminar el libro
+                fetch(`/libros/${libroId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            // Eliminar el libro del DOM
+                            libroItem.remove();
+                        } else {
+                            console.error('Error al eliminar el libro.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error en la solicitud:', error);
+                    });
+            });
+        });
     });
 </script>
 </body>
 </html>
-
