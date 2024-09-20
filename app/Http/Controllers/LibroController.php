@@ -28,15 +28,33 @@ class LibroController extends Controller
     // Método para almacenar un nuevo libro
     public function almacenar(Request $request)
     {
+        // Validar los datos (puedes agregar reglas de validación más estrictas si es necesario)
+        $request->validate([
+            'titulo' => 'required|string|max:255',
+            'autor' => 'required|string|max:255',
+            'categoria_id' => 'required|integer|exists:categorias,id',
+            'imagen' => 'nullable|file|mimes:jpeg,png,jpg,gif'
+        ]);
+
+        // Crear una nueva instancia de Libro
         $libro = new Libro;
         $libro->titulo = $request->titulo;
         $libro->autor = $request->autor;
-        $libro->categoria_id = $request->categoria_id; // Ajustado a categoria_id
-        $libro->imagen = $request->imagen; // Suponiendo que cargas una imagen
+        $libro->categoria_id = $request->categoria_id;
+
+        // Si se subió una imagen, manejar el archivo
+        if ($request->hasFile('imagen')) {
+            $imagenPath = $request->file('imagen')->store('imagenes_libros', 'public'); // Guardar en el storage público
+            $libro->imagen = $imagenPath;
+        }
+
+        // Guardar el libro en la base de datos
         $libro->save();
 
-        return redirect('/')->with('success', 'Libro agregado exitosamente.');
+        // Devolver una respuesta JSON en lugar de redirigir
+        return response()->json(['success' => true, 'message' => 'Libro agregado exitosamente.']);
     }
+
 
     // Método para eliminar un libro
     public function eliminar($id)
