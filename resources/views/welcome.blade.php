@@ -35,6 +35,8 @@
             <a href="{{ route('mostrarLibros', ['categoriaId' => 3]) }}" class="btn btn-link">Poesía</a>
         </nav>
         <a href="{{ route('crearLibro') }}" class="btn btn-success mt-3">Agregar Libro</a>
+        <a href="{{ route('libross') }}" class="btn btn-info mt-3">Ver Libros</a> <!-- Nuevo botón para ver libros -->
+
     </header>
 
     <main>

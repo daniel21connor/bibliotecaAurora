@@ -43,7 +43,9 @@ Route::post('/libros', [LibroController::class, 'almacenar'])->name('almacenarLi
 
 // Ruta para eliminar un libro
 Route::delete('/libros/{id}', [LibroController::class, 'eliminar'])->name('eliminarLibro');
-
+Route::get('libross', function () {
+    return view('libross');
+})->name('libross');
 
 
 

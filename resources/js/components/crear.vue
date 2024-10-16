@@ -1,53 +1,38 @@
 <template>
     <div class="container mt-5">
-        <header class="text-center mb-4">
-            <h1>Agregar Nuevo Libro</h1>
-        </header>
-
-        <main>
-            <!-- Formulario para agregar un libro -->
-            <form @submit.prevent="enviarFormulario" enctype="multipart/form-data">
-                <!-- Campo para el título del libro -->
-                <div class="mb-3">
-                    <label for="titulo" class="form-label">Título</label>
-                    <input type="text" class="form-control" id="titulo" v-model="libro.titulo" required>
-                </div>
-
-                <!-- Campo para el autor del libro -->
-                <div class="mb-3">
-                    <label for="autor" class="form-label">Autor</label>
-                    <input type="text" class="form-control" id="autor" v-model="libro.autor" required>
-                </div>
-
-                <!-- Campo para seleccionar la categoría del libro -->
-                <div class="mb-3">
-                    <label for="categoria_id" class="form-label">Categoría</label>
-                    <select class="form-select" id="categoria_id" v-model="libro.categoria_id" required>
-                        <option v-for="categoria in categorias" :value="categoria.id" :key="categoria.id">
-                            {{ categoria.nombre }}
-                        </option>
-                    </select>
-                </div>
-
-                <!-- Campo para cargar una imagen del libro -->
-                <div class="mb-3">
-                    <label for="imagen" class="form-label">Imagen</label>
-                    <input type="file" class="form-control" id="imagen" @change="procesarImagen">
-                </div>
-
-                <!-- Botón para enviar el formulario -->
-                <button type="submit" class="btn btn-primary">Agregar Libro</button>
-            </form>
-        </main>
-
-        <!-- Botón para volver al inicio -->
-        <footer class="text-center mt-5">
-            <button @click="volverInicio" class="btn btn-link">Volver a Inicio</button>
-        </footer>
+        <h2>Agregar Nuevo Libro</h2>
+        <form @submit.prevent="enviarFormulario" class="custom-form" enctype="multipart/form-data">
+            <div class="form-group mb-3">
+                <label for="titulo">Título</label>
+                <input type="text" v-model="libro.titulo" class="form-control" id="titulo" placeholder="Título del libro" required>
+            </div>
+            <div class="form-group mb-3">
+                <label for="autor">Autor</label>
+                <input type="text" v-model="libro.autor" class="form-control" id="autor" placeholder="Autor del libro" required>
+            </div>
+            <div class="form-group mb-3">
+                <label for="categoria_id">Categoría</label>
+                <select v-model="libro.categoria_id" class="form-select" id="categoria_id" required>
+                    <option v-for="categoria in categorias" :value="categoria.id" :key="categoria.id">
+                        {{ categoria.nombre }}
+                    </option>
+                </select>
+            </div>
+            <div class="form-group mb-3">
+                <label for="imagen">Imagen (Archivo)</label>
+                <input type="file" @change="procesarImagen" class="form-control" id="imagen" required>
+            </div>
+            <button type="submit" class="btn-custom">Agregar Libro</button>
+        </form>
+        <button @click="volverInicio" class="btn btn-link mt-3">Volver a Inicio</button>
     </div>
 </template>
 
 <script>
+import axios from 'axios';
+import Toastify from 'toastify-js';
+import 'toastify-js/src/toastify.css'; // Importa los estilos de Toastify
+
 export default {
     data() {
         return {
@@ -65,53 +50,54 @@ export default {
         };
     },
     methods: {
-        // Maneja el cambio en el campo de imagen
         procesarImagen(event) {
             const file = event.target.files[0];
-            if (file && file.size < 2 * 1024 * 1024) {  // Verifica que la imagen no exceda los 2MB
+            if (file && file.size < 2 * 1024 * 1024) { // Máximo 2MB
                 this.libro.imagen = file;
             } else {
-                alert('La imagen es demasiado grande. Por favor selecciona una imagen de menos de 2MB.');
+                Toastify({
+                    text: "La imagen es demasiado grande (máximo 2MB).",
+                    duration: 3000,
+                    backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)"
+                }).showToast();
             }
         },
 
-        // Envía el formulario para agregar un libro
-        enviarFormulario() {
-            const formData = new FormData();
-            formData.append('titulo', this.libro.titulo);
-            formData.append('autor', this.libro.autor);
-            formData.append('categoria_id', this.libro.categoria_id);
-            if (this.libro.imagen) {
-                formData.append('imagen', this.libro.imagen);
-            }
+        async enviarFormulario() {
+            try {
+                const formData = new FormData();
+                formData.append('titulo', this.libro.titulo);
+                formData.append('autor', this.libro.autor);
+                formData.append('categoria_id', this.libro.categoria_id);
+                if (this.libro.imagen) {
+                    formData.append('imagen', this.libro.imagen);
+                }
 
-            // Obtén el token CSRF
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-            // Realiza la solicitud POST
-            fetch('/libros', {  // Asegúrate de que la ruta sea la correcta
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken,
-                },
-                body: formData
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Libro agregado exitosamente');
-                        this.resetForm();
-                    } else {
-                        alert('Error al agregar el libro: ' + data.message);
+                // Envía la solicitud POST a la API
+                const response = await axios.post('/api/libros', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Hubo un problema al agregar el libro.');
                 });
+
+                // Muestra notificación de éxito
+                Toastify({
+                    text: "Libro agregado exitosamente.",
+                    duration: 3000,
+                    backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)"
+                }).showToast();
+
+                this.resetForm();
+            } catch (error) {
+                // Muestra notificación de error
+                Toastify({
+                    text: "Error al agregar el libro.",
+                    duration: 3000,
+                    backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)"
+                }).showToast();
+            }
         },
 
-        // Resetea el formulario después de enviar los datos
         resetForm() {
             this.libro = {
                 titulo: '',
@@ -119,30 +105,52 @@ export default {
                 categoria_id: '',
                 imagen: null
             };
-            document.getElementById('imagen').value = null;  // Limpia el campo de imagen
+            document.getElementById('imagen').value = null; // Limpiar campo imagen
         },
 
-        // Redirige al usuario a la página de inicio
         volverInicio() {
-            window.location.href = '/'; // Redirecciona a la página principal
+            window.location.href = '/';
         }
     }
 };
 </script>
 
 <style scoped>
-/* Estilos personalizados */
 .container {
     max-width: 600px;
-    margin: 0 auto;
+    margin: auto;
 }
 
-h1 {
-    font-size: 2rem;
-    margin-bottom: 1.5rem;
+.custom-form {
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f8f9fa;
 }
 
-footer button {
-    font-size: 1rem;
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.btn-custom {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-custom:hover {
+    background-color: #0056b3;
 }
 </style>
