@@ -9,24 +9,42 @@ use App\Models\Categoria; // Modelo de Categoría
 class LibroController extends Controller
 {
     // Método para mostrar todos los libros
-    public function index()
-    {
-        // Obtener todos los libros
-        $libros = Libro::all();
-        return response()->json($libros); // Devolver los libros en formato JSON
+    public function index() {
+        try {
+            $libros = Libro::all();
+            return response()->json($libros);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al cargar los libros: ' . $e->getMessage()], 500);
+        }
     }
+
 
     // Método para mostrar los libros de una categoría específica
     public function mostrarLibros($categoriaId)
     {
+        // Buscar la categoría por ID
         $categoria = Categoria::find($categoriaId);
+
         if (!$categoria) {
+            // Responder con JSON si la solicitud es una API, de lo contrario redirigir
+            if (request()->expectsJson()) {
+                return response()->json(['error' => 'Categoría no encontrada.'], 404);
+            }
             return redirect('/')->with('error', 'Categoría no encontrada.');
         }
 
+        // Obtener los libros de la categoría
         $libros = Libro::where('categoria_id', $categoriaId)->get();
+
+        // Si es una solicitud API, devolver los libros en formato JSON
+        if (request()->expectsJson()) {
+            return response()->json($libros);
+        }
+
+        // Si no es una solicitud API, devolver la vista 'welcome'
         return view('welcome', compact('libros', 'categoria'));
     }
+
 
     // Método para mostrar el formulario de creación de un libro
     public function crear()

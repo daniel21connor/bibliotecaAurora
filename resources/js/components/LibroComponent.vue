@@ -1,32 +1,26 @@
-<!-- Template: Define la estructura HTML del componente -->
 <template>
     <div>
-        <!-- Botón para regresar al inicio -->
         <button class="btn btn-secondary mb-4" @click="regresarAlInicio">Regresar al Inicio</button>
 
         <h2>Libros Disponibles</h2>
 
-        <!-- Input para filtrar libros -->
         <div class="mb-4">
             <input type="text" v-model="filtro" class="form-control" placeholder="Buscar por título o autor" />
         </div>
 
-        <!-- Muestra mensajes de éxito o error -->
         <div v-if="mensaje" class="alert alert-success">{{ mensaje }}</div>
 
-        <!-- Lista de libros -->
-        <div class="row" v-if="libros.length">
-            <!-- Itera sobre cada libro filtrado -->
+        <div class="row" v-if="librosFiltrados.length">
             <div class="col-md-4 libro-item" v-for="libro in librosFiltrados" :key="libro.id">
                 <div class="card mb-4">
-                    <!-- Imagen del libro -->
+                    <!-- Mostrar la imagen -->
                     <img :src="'/images/' + libro.imagen" class="card-img-top" alt="Portada del Libro" style="width: 100%; height: 200px; object-fit: cover;">
                     <div class="card-body">
-                        <!-- Campo editable para el título -->
+                        <!-- Título del libro editable -->
                         <h5 class="card-title">Título:</h5>
                         <input type="text" v-model="libro.titulo" @change="guardarCambios(libro)" class="form-control mb-2" />
 
-                        <!-- Campo editable para el autor -->
+                        <!-- Autor del libro editable -->
                         <h6 class="card-subtitle mb-2">Autor:</h6>
                         <input type="text" v-model="libro.autor" @change="guardarCambios(libro)" class="form-control mb-3" />
 
@@ -37,7 +31,6 @@
             </div>
         </div>
 
-        <!-- Mensaje si no hay libros disponibles -->
         <div v-else>
             <p>No hay libros disponibles.</p>
         </div>
@@ -45,19 +38,18 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
-    // Define los datos reactivos del componente
     data() {
         return {
-            libros: [], // Array para almacenar los libros
-            mensaje: null, // Mensaje para mostrar al usuario (éxito/error)
-            filtro: '', // Texto para filtrar libros
+            libros: [],
+            mensaje: null,
+            filtro: '',
         };
     },
 
-    // Propiedades computadas
     computed: {
-        // Filtra los libros basándose en el texto de búsqueda
         librosFiltrados() {
             return this.libros.filter(libro => {
                 return libro.titulo.toLowerCase().includes(this.filtro.toLowerCase()) ||
@@ -66,102 +58,78 @@ export default {
         }
     },
 
-    // Se ejecuta cuando el componente se monta en el DOM
     mounted() {
-        this.cargarLibros(); // Carga los libros al iniciar el componente
+        this.cargarLibros();
     },
 
-    // Métodos del componente
     methods: {
-        // Carga los libros desde la API
         async cargarLibros() {
             try {
-                const response = await fetch('/api/libros');
-                if (!response.ok) {
-                    throw new Error('Error al cargar los libros');
-                }
-                this.libros = await response.json();
+                const token = localStorage.getItem('token');
+                const token1 = '4|7zRejOmOkb67njVQp0fQkCbsVtPnJl8dsKanaewZd73984b5'
+                const response = await axios.get('/api/libros', {
+                    headers: {
+                        'Authorization': `Bearer ${token1}`
+                    }
+                });
+                this.libros = response.data;
             } catch (error) {
                 console.error('Error al cargar los libros:', error);
-                this.mensaje = 'Error al cargar los libros. Por favor, intenta de nuevo.';
+                this.mensaje = 'Error al cargar los libros. Por favor, intenta de nuevo. ' + (error.response?.data?.error || error.message);
             }
         },
 
-        // Elimina un libro específico
         async eliminarLibro(libroId) {
             if (confirm('¿Estás seguro de que deseas eliminar este libro?')) {
                 try {
-                    const response = await fetch(`/api/libros/${libroId}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                            'Content-Type': 'application/json'
-                        }
-                    });
-                    if (!response.ok) {
-                        throw new Error('Error al eliminar el libro');
-                    }
-                    // Elimina el libro de la lista local
+                    await axios.delete(`/api/libros/${libroId}`);
                     this.libros = this.libros.filter(libro => libro.id !== libroId);
                     this.mensaje = 'Libro eliminado exitosamente.';
                 } catch (error) {
-                    console.error('Error en la solicitud:', error);
-                    this.mensaje = 'Error al eliminar el libro. Por favor, intenta de nuevo.';
+                    console.error('Error al eliminar el libro:', error);
+                    this.mensaje = 'Error al eliminar el libro. Por favor, intenta de nuevo. ' + (error.response?.data?.error || error.message);
                 }
             }
         },
 
-        // Guarda los cambios de un libro editado
         async guardarCambios(libro) {
             try {
-                const response = await fetch(`/api/libros/${libro.id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        titulo: libro.titulo,
-                        autor: libro.autor
-                    })
+                await axios.put(`/api/libros/${libro.id}`, {
+                    titulo: libro.titulo,
+                    autor: libro.autor
                 });
-                if (!response.ok) {
-                    throw new Error('Error al actualizar el libro');
-                }
                 this.mensaje = 'Libro actualizado exitosamente.';
             } catch (error) {
-                console.error('Error en la solicitud:', error);
-                this.mensaje = 'Error al actualizar el libro. Por favor, intenta de nuevo.';
+                console.error('Error al actualizar el libro:', error);
+                this.mensaje = 'Error al actualizar el libro. Por favor, intenta de nuevo. ' + (error.response?.data?.error || error.message);
             }
         },
 
-        // Redirige al usuario a la página de inicio
         regresarAlInicio() {
             window.location.href = '/';
         }
-    }
+    } // Cierre correcto de methods
 };
 </script>
 
 <style scoped>
-/* Estilo para los elementos de libro */
+/* Estilos para la tarjeta de cada libro */
 .libro-item {
     cursor: pointer;
 }
 
-/* Flexbox para organizar el contenido de la tarjeta */
 .card-body {
     display: flex;
     flex-direction: column;
 }
 
-/* Estilo para los inputs de texto */
+/* Estilo para los inputs dentro de cada tarjeta */
 .card-body input[type="text"] {
     width: 100%;
     margin-bottom: 10px;
 }
 
-/* Márgenes para títulos y subtítulos */
+/* Espaciado entre el título y subtítulo */
 .card-title, .card-subtitle {
     margin-bottom: 5px;
 }

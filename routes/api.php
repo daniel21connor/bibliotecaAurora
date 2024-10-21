@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,28 +21,27 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 // Prefijo para todas las rutas relacionadas con libros
-Route::prefix('libros')->group(function () {
-    // Obtener todos los libros
-    Route::get('/', [LibroController::class, 'index']);
+// Obtener todos los libros
+Route::get('/libros', [LibroController::class, 'index'])->middleware('auth:sanctum'); // Rutas para obtener todos los libros
 
-    // Obtener libros por categoría
-    Route::get('/categoria/{categoriaId}', [LibroController::class, 'mostrarLibros']);
+// Obtener libros por categoría
+Route::get('/libros/categoria/{categoriaId}', [LibroController::class, 'mostrarLibros']); // Rutas para obtener libros por categoría
 
-    // Mostrar el formulario de creación de libros (opcional si usas API)
-    Route::get('/crear', [LibroController::class, 'crear']);
+// Almacenar un nuevo libro
+Route::post('/libros', [LibroController::class, 'almacenar']); // Rutas para almacenar un nuevo libro
 
-    // Almacenar un nuevo libro
-    Route::post('/', [LibroController::class, 'almacenar']);
+// Obtener un libro específico por su ID
+Route::get('/libros/{id}', [LibroController::class, 'show']); // Rutas para obtener un libro específico
 
-    // Mostrar el formulario de edición de un libro (opcional si usas API)
-    Route::get('/{id}/editar', [LibroController::class, 'editar']); // Ruta para mostrar el formulario de edición
+// Actualizar un libro existente
+Route::put('/libros/{id}', [LibroController::class, 'actualizar']); // Rutas para actualizar un libro existente
 
-    // Obtener un libro específico por su ID
-    Route::get('/{id}', [LibroController::class, 'show']);
+// Eliminar un libro existente
+Route::delete('/libros/{id}', [LibroController::class, 'eliminar']); // Rutas para eliminar un libro existente
 
-    // Actualizar un libro existente
-    Route::put('/{id}', [LibroController::class, 'actualizar']);
 
-    // Eliminar un libro existente
-    Route::delete('/{id}', [LibroController::class, 'eliminar']);
-});
+
+// Rutas para registro y autenticación de usuarios
+Route::post('/register', [AuthController::class, 'register']); // Ruta para registrar un nuevo usuario
+Route::post('/login', [AuthController::class, 'login']); // Ruta para iniciar sesión
+Route::post('/userinfo', [AuthController::class, 'infouser'])->middleware('auth:sanctum');

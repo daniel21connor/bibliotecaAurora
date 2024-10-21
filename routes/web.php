@@ -47,6 +47,8 @@ Route::get('libross', function () {
     return view('libross');
 })->name('libross');
 
-
+Route::get('/api', function () {
+    return view('api');
+});
 
 
