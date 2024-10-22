@@ -19,8 +19,8 @@
                 </select>
             </div>
             <div class="form-group mb-3">
-                <label for="imagen">Imagen (Archivo)</label>
-                <input type="file" @change="procesarImagen" class="form-control" id="imagen" required>
+                <label for="imagen">Imagen (Opcional)</label>
+                <input type="file" @change="procesarImagen" class="form-control" id="imagen">
             </div>
             <button type="submit" class="btn-custom">Agregar Libro</button>
         </form>
@@ -54,12 +54,13 @@ export default {
             const file = event.target.files[0];
             if (file && file.size < 2 * 1024 * 1024) { // Máximo 2MB
                 this.libro.imagen = file;
-            } else {
+            } else if (file) {
                 Toastify({
                     text: "La imagen es demasiado grande (máximo 2MB).",
                     duration: 3000,
                     backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)"
                 }).showToast();
+                this.libro.imagen = null; // Reiniciar el campo si excede el tamaño
             }
         },
 
@@ -69,6 +70,8 @@ export default {
                 formData.append('titulo', this.libro.titulo);
                 formData.append('autor', this.libro.autor);
                 formData.append('categoria_id', this.libro.categoria_id);
+
+                // Solo adjuntar la imagen si existe
                 if (this.libro.imagen) {
                     formData.append('imagen', this.libro.imagen);
                 }
