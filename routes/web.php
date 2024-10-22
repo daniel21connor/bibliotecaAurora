@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PerfumeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LibroController;
 use App\Http\Controllers\FavoritoController;
@@ -50,5 +51,11 @@ Route::get('libross', function () {
 Route::get('/api', function () {
     return view('api');
 });
+// routes/web.php
 
+
+
+Route::get('/vue', function () {
+    return view('vue');
+})->name('vue');
 

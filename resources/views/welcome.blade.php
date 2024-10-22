@@ -36,7 +36,7 @@
         </nav>
         <a href="{{ route('crearLibro') }}" class="btn btn-success mt-3">Agregar Libro</a>
         <a href="{{ route('libross') }}" class="btn btn-info mt-3">Ver Libros</a> <!-- Nuevo botón para ver libros -->
-
+          <a href="{{ route('vue') }}" class="btn btn-info mt-3">vue de romeo</a>
     </header>
 
     <main>

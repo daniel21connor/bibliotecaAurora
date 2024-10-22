@@ -21,6 +21,8 @@ import Cotactos from './components/Cotactos.vue';
 app.component('cotactos', Cotactos);
 import LibroComponent from './components/LibroComponent.vue';
 app.component('libro', LibroComponent);
+import vuederomeo from './components/vuederomeo.vue';
+app.component('vue', vuederomeo);
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue

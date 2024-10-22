@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PerfumeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -38,10 +39,18 @@ Route::put('/libros/{id}', [LibroController::class, 'actualizar']); // Rutas par
 
 // Eliminar un libro existente
 Route::delete('/libros/{id}', [LibroController::class, 'eliminar']); // Rutas para eliminar un libro existente
+Route::get('/productos', function () {
+    // Hacemos la solicitud a la API con el token en el header
+    $response = Http::withToken('cSqgijwPyIzhfNJIec0A25UypPUCUVueCQxIN3xm46058b27')
+        ->get('http://3.140.239.144/api/productos');
 
+    // Devolvemos la respuesta como JSON
+    return $response->json();
+});
 
 
 // Rutas para registro y autenticación de usuarios
 Route::post('/register', [AuthController::class, 'register']); // Ruta para registrar un nuevo usuario
 Route::post('/login', [AuthController::class, 'login']); // Ruta para iniciar sesión
 Route::post('/userinfo', [AuthController::class, 'infouser'])->middleware('auth:sanctum');
+
