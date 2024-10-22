@@ -1,7 +1,7 @@
 <template>
     <div class="container mt-5">
         <h2>Agregar Nuevo Libro</h2>
-        <form @submit.prevent="enviarFormulario" class="custom-form" enctype="multipart/form-data">
+        <form @submit.prevent="enviarFormulario" class="custom-form">
             <div class="form-group mb-3">
                 <label for="titulo">Título</label>
                 <input type="text" v-model="libro.titulo" class="form-control" id="titulo" placeholder="Título del libro" required>
@@ -19,8 +19,8 @@
                 </select>
             </div>
             <div class="form-group mb-3">
-                <label for="imagen">Imagen (Opcional)</label>
-                <input type="file" @change="procesarImagen" class="form-control" id="imagen">
+                <label for="imagen_url">URL de la Imagen (Opcional)</label>
+                <input type="text" v-model="libro.imagen_url" class="form-control" id="imagen_url" placeholder="URL de la imagen">
             </div>
             <button type="submit" class="btn-custom">Agregar Libro</button>
         </form>
@@ -40,7 +40,7 @@ export default {
                 titulo: '',
                 autor: '',
                 categoria_id: '',
-                imagen: null
+                imagen_url: '' // Aceptar URL de imagen en lugar de archivo
             },
             categorias: [
                 { id: 1, nombre: 'Literatura' },
@@ -50,38 +50,17 @@ export default {
         };
     },
     methods: {
-        procesarImagen(event) {
-            const file = event.target.files[0];
-            if (file && file.size < 2 * 1024 * 1024) { // Máximo 2MB
-                this.libro.imagen = file;
-            } else if (file) {
-                Toastify({
-                    text: "La imagen es demasiado grande (máximo 2MB).",
-                    duration: 3000,
-                    backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)"
-                }).showToast();
-                this.libro.imagen = null; // Reiniciar el campo si excede el tamaño
-            }
-        },
-
         async enviarFormulario() {
             try {
-                const formData = new FormData();
-                formData.append('titulo', this.libro.titulo);
-                formData.append('autor', this.libro.autor);
-                formData.append('categoria_id', this.libro.categoria_id);
-
-                // Solo adjuntar la imagen si existe
-                if (this.libro.imagen) {
-                    formData.append('imagen', this.libro.imagen);
-                }
+                const formData = {
+                    titulo: this.libro.titulo,
+                    autor: this.libro.autor,
+                    categoria_id: this.libro.categoria_id,
+                    imagen_url: this.libro.imagen_url // Enviar la URL de la imagen
+                };
 
                 // Envía la solicitud POST a la API
-                const response = await axios.post('/api/libros', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                });
+                const response = await axios.post('/api/libros', formData);
 
                 // Muestra notificación de éxito
                 Toastify({
@@ -106,9 +85,8 @@ export default {
                 titulo: '',
                 autor: '',
                 categoria_id: '',
-                imagen: null
+                imagen_url: '' // Reiniciar el campo de URL de la imagen
             };
-            document.getElementById('imagen').value = null; // Limpiar campo imagen
         },
 
         volverInicio() {

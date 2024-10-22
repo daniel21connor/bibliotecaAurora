@@ -70,21 +70,15 @@ class LibroController extends Controller
         $libro->autor = $request->autor;
         $libro->categoria_id = $request->categoria_id;
 
-        if ($request->hasFile('imagen')) {
-            // Obtener el archivo de imagen
-            $imagen = $request->file('imagen');
+        $libro->categoria_id = $request->categoria_id;
 
-            // Crear un nombre único para la imagen
-            $nombreImagen = time() . '_' . $imagen->getClientOriginalName();
-
-            // Almacenar la imagen en la carpeta 'public/images'
-            $imagen->move(public_path('images'), $nombreImagen);
-
-            // Asignar el nombre de la imagen al libro
-            $libro->imagen = $nombreImagen;
+// Verificar si se ha proporcionado una URL para la imagen
+        if ($request->has('imagen_url')) {
+            // Asignar la URL de la imagen al libro
+            $libro->imagen = $request->input('imagen_url');
         }
 
-        // Guardar el libro en la base de datos
+// Guardar el libro en la base de datos
         $libro->save();
 
         // Devolver una respuesta JSON

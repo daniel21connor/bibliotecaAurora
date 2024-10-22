@@ -13,8 +13,8 @@
         <div class="row" v-if="librosFiltrados.length">
             <div class="col-md-4 libro-item" v-for="libro in librosFiltrados" :key="libro.id">
                 <div class="card mb-4">
-                    <!-- Mostrar la imagen -->
-                    <img :src="'/images/' + libro.imagen" class="card-img-top" alt="Portada del Libro" style="width: 100%; height: 200px; object-fit: cover;">
+                    <!-- Mostrar la imagen desde la URL -->
+                    <img :src="libro.imagen" class="card-img-top" alt="Portada del Libro" style="width: 100%; height: 200px; object-fit: cover;">
                     <div class="card-body">
                         <!-- Título del libro editable -->
                         <h5 class="card-title">Título:</h5>
@@ -108,7 +108,7 @@ export default {
         regresarAlInicio() {
             window.location.href = '/';
         }
-    } // Cierre correcto de methods
+    }
 };
 </script>
 
