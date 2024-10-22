@@ -67,7 +67,7 @@ export default {
             try {
                 const token = localStorage.getItem('token');
                 const token1 = '4|7zRejOmOkb67njVQp0fQkCbsVtPnJl8dsKanaewZd73984b5'
-                const response = await axios.get('52.14.84.161/api/libros', {
+                const response = await axios.get('/api/libros', {
                     headers: {
                         'Authorization': `Bearer ${token1}`
                     }
