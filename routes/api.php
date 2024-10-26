@@ -42,7 +42,7 @@ Route::delete('/libros/{id}', [LibroController::class, 'eliminar']); // Rutas pa
 Route::get('/productos', function () {
     // Hacemos la solicitud a la API con el token en el header
     $response = Http::withToken('cSqgijwPyIzhfNJIec0A25UypPUCUVueCQxIN3xm46058b27')
-        ->get('http://3.140.239.144/api/productos');
+        ->get('http://3.20.219.68/api/productos');
 
     // Devolvemos la respuesta como JSON
     return $response->json();

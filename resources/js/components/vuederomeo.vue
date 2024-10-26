@@ -38,7 +38,7 @@ export default {
   methods: {
     fetchProductos() {
       this.loading = true; // Comienza la carga
-      axios.get('http://3.140.239.144/api/productos', {
+      axios.get('http://3.20.219.68/api/productos', {
         headers: {
           'Authorization': `Bearer ${this.token}`,  // Agrega el token en los headers
           'Accept': 'application/json'              // Asegura que la solicitud se haga como JSON
